@@ -1,21 +1,15 @@
 import sys
 import random
 
+#Global declaration
 player = 0
 turn = 1
 
-#board="""\
-#| |1|2|3|4|5|6|7|8|9|10|
-#|A| | | | | | | | | |  |
-#|B| | | | | | | | | |  |
-#|C| | | | | | | | | |  |
-#|D| | | | | | | | | |  |
-#|E| | | | | | | | | |  |
-#|F| | | | | | | | | |  |
-#|G| | | | | | | | | |  |
-#|H| | | | | | | | | |  |
-#|I| | | | | | | | | |  |
-#|J| | | | | | | | | |  |"""
+safeC = 5
+safeB = 4
+safeR = 3
+safeS = 3
+safeD = 2
 
 if(len(sys.argv) > 1):
     if(sys.argv[1]=="P1"):
@@ -32,27 +26,44 @@ while(player==0):
             player = "Player 2"
 
 print()
-print(player,", Turn ",turn)
+print(player)
+print("")
 
-board=[[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
+#Board reference
+#| |1|2|3|4|5|6|7|8|9|10|
+#|A| | | | | | | | | |  |
+#|B| | | | | | | | | |  |
+#|C| | | | | | | | | |  |
+#|D| | | | | | | | | |  |
+#|E| | | | | | | | | |  |
+#|F| | | | | | | | | |  |
+#|G| | | | | | | | | |  |
+#|H| | | | | | | | | |  |
+#|I| | | | | | | | | |  |
+#|J| | | | | | | | | |  |
 
-def printBoard():
+#Global declaration
+
+blankBoard=[[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
+
+defBoard = blankBoard.copy()
+offBoard = blankBoard.copy()
+startDefBoard = blankBoard.copy()
+
+def printBoard(boardU1):
+    print("")
     for i in range(64,75):
         if i==64:
             print("| |1|2|3|4|5|6|7|8|9|10|")
         else:
             line = "|"+chr(i)+"|"
             for j in range(0,9):
-                line = line+board[i-65][j]+"|"
+                line = line+boardU1[i-65][j]+"|"
             
-            line = line+board[i-65][9]+" |"
+            line = line+boardU1[i-65][9]+" |"
             print(line)
-
-#printBoard()
-
-shipsPlaced = False
-
-def placeShip(length,type):
+    print("")
+def placeShip(boardU2,length,type):
     
     curLen = 1
     finished = False
@@ -61,14 +72,14 @@ def placeShip(length,type):
         x = random.randrange(0,9)
         y = random.randrange(0,9)
         
-        if(shipOri(x,y,length,type) == True):
+        if(shipOri(boardU2,x,y,length,type) == True):
             finished = True
 
-def shipOri(posX,posY,length,type):
+def shipOri(boardU3,posX,posY,length,type):
     
     finished = False
 
-    if(board[posX][posY] != " "):
+    if(boardU3[posX][posY] != " "):
         return False
     
     failed1 = 0
@@ -93,7 +104,7 @@ def shipOri(posX,posY,length,type):
                 if(curX+1 > 9 or curX+1 < 0):
                     failed1 = 1
                     placed = length
-                elif(board[curX+1][curY] == " "):
+                elif(boardU3[curX+1][curY] == " "):
                     curX = curX+1
                     safe = safe+1
                 else:
@@ -104,11 +115,11 @@ def shipOri(posX,posY,length,type):
                     curX = posX
                     curY = posY
                     
-                    board[curX][curY] = type
+                    boardU3[curX][curY] = type
                     placed = 1
                     
                     while(placed < length):
-                        board[curX+1][curY] = type
+                        boardU3[curX+1][curY] = type
                         curX = curX+1
                         placed = placed+1
                         
@@ -122,7 +133,7 @@ def shipOri(posX,posY,length,type):
                 if(curY+1 > 9 or curY+1 < 0):
                     failed2 = 1
                     placed = length
-                elif(board[curX][curY+1] == " "):
+                elif(boardU3[curX][curY+1] == " "):
                     curY = curY+1
                     safe = safe+1
                 else:
@@ -133,11 +144,11 @@ def shipOri(posX,posY,length,type):
                     curX = posX
                     curY = posY
                     
-                    board[curX][curY] = type
+                    boardU3[curX][curY] = type
                     placed = 1
                     
                     while(placed < length):
-                        board[curX][curY+1] = type
+                        boardU3[curX][curY+1] = type
                         curY = curY+1
                         placed = placed+1
                         
@@ -151,7 +162,7 @@ def shipOri(posX,posY,length,type):
                 if(curX-1 > 9 or curX-1 < 0):
                     failed3 = 1
                     placed = length
-                elif(board[curX-1][curY] == " "):
+                elif(boardU3[curX-1][curY] == " "):
                     curX = curX-1
                     safe = safe+1
                 else:
@@ -162,11 +173,11 @@ def shipOri(posX,posY,length,type):
                     curX = posX
                     curY = posY
                     
-                    board[curX][curY] = type
+                    boardU3[curX][curY] = type
                     placed = 1
                     
                     while(placed < length):
-                        board[curX-1][curY] = type
+                        boardU3[curX-1][curY] = type
                         curX = curX-1
                         placed = placed+1
                         
@@ -180,7 +191,7 @@ def shipOri(posX,posY,length,type):
                 if(curY-1 > 9 or curY-1 < 0):
                     failed4 = 1
                     placed = length
-                elif(board[curX][curY-1] == " "):
+                elif(boardU3[curX][curY-1] == " "):
                     curY = curY-1
                     safe = safe+1
                 else:
@@ -191,28 +202,151 @@ def shipOri(posX,posY,length,type):
                     curX = posX
                     curY = posY
                     
-                    board[curX][curY] = type
+                    boardU3[curX][curY] = type
                     placed = 1
                     
                     while(placed < length):
-                        board[curX][curY-1] = type
+                        boardU3[curX][curY-1] = type
                         curY = curY-1
                         placed = placed+1
                         
                     return True
 
-placeShip(5,"C")
-placeShip(4,"B")
-placeShip(3,"R")
-placeShip(3,"S")
-placeShip(2,"D")
+#def saveOriginal(initial, copy):
     
-printBoard()
 
-#move = str(input('Please enter sector to attack (ie, "A1"): '))
+def takeInput():
+    
+    validInput = False
+    validX = -1
+    validY = -1
+    
+    while(not(validInput)):
+        tempInput = str(input('Fire at coordinate: '))
+        
+        if(len(tempInput) == 2 or len(tempInput) == 3):
+            if(tempInput[0].isalpha()):
+                try:
+                    dummyVal = int(tempInput[1])
 
-#Carrier = 5
-#Battleship = 4
-#Cruiser = 3
-#Submarine = 3
-#Destroyer = 2
+                    conditionalCheck = True
+                    twoDigit = False
+                    
+                    if(len(tempInput) == 3):
+                        if(type(tempInput[2]) == int):
+                            #conditionalCheck already true
+                            twoDigit = True
+                        else:
+                            conditionalCheck = False
+                            
+                    if(conditionalCheck):
+                        if(ord(tempInput[0].upper()) >= 65 and ord(tempInput[0].upper()) <= 74):
+                            validX = ord(tempInput[0].upper()) - 65
+                            
+                            tempY = int(tempInput[1:])
+                            if(tempY >= 1 and tempY <= 10):
+                                validY = tempY - 1
+                                validInput = True
+                except ValueError as ve:
+                    dummyVal = False
+    
+    return [validX, validY]
+
+def processInput(board, coords):
+    #Ships: C|B|R|S|D
+    #Hit: H
+    #Miss: M
+    
+    global safeC
+    global safeB
+    global safeR
+    global safeS
+    global safeD
+    
+    value = board[coords[0]][coords[1]]
+    
+    if(value == "H" or value == "M"):
+        return False
+    elif(value == " "):
+        print("Miss")
+        board[coords[0]][coords[1]] = "M"
+        return True
+    else:
+        if(value == "C"):
+            safeC=safeC - 1
+            board[coords[0]][coords[1]] = "H"
+            
+            if(safeC == 0):
+                print("Sunk Carrier")
+                return True
+            else:
+                print("Hit")
+                return True
+                
+        if(value == "B"):
+            safeB=safeB - 1
+            board[coords[0]][coords[1]] = "H"
+            
+            if(safeB == 0):
+                print("Sunk Battleship")
+                return True
+            else:
+                print("Hit")
+                return True
+                
+        if(value == "R"):
+            safeR=safeR - 1
+            board[coords[0]][coords[1]] = "H"
+            
+            if(safeR == 0):
+                print("Sunk Cruiser")
+                return True
+            else:
+                print("Hit")
+                return True
+                
+        if(value == "S"):
+            safeS=safeS - 1
+            board[coords[0]][coords[1]] = "H"
+            
+            if(safeS == 0):
+                print("Sunk Submarine")
+                return True
+            else:
+                print("Hit")
+                return True
+                
+        if(value == "D"):
+            safeD=safeD - 1
+            board[coords[0]][coords[1]] = "H"
+            
+            if(safeD == 0):
+                print("Sunk Destroyer")
+                return True
+            else:
+                print("Hit")
+                return True
+    
+def gameLoop():
+    gameOngoing = True
+    
+    while(gameOngoing):
+        turnFinished = False
+        
+        while(not(turnFinished)):
+            turnFinished = processInput(defBoard, takeInput())
+            
+        printBoard(defBoard)    
+            
+            
+
+
+placeShip(defBoard,5,"C") #Carrier = 5
+placeShip(defBoard,4,"B") #Battleship = 4
+placeShip(defBoard,3,"R") #Cruiser = 3
+placeShip(defBoard,3,"S") #Submarine = 3
+placeShip(defBoard,2,"D") #Destroyer = 2
+
+gameLoop()
+
+printBoard(defBoard)
