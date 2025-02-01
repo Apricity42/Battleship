@@ -11,6 +11,13 @@ safeR = 3
 safeS = 3
 safeD = 2
 
+aliveC = True
+aliveB = True
+aliveR = True
+aliveS = True
+aliveD = True
+lastHit = False
+
 if(len(sys.argv) > 1):
     if(sys.argv[1]=="P1"):
         player = "Player 1"
@@ -47,7 +54,7 @@ print("")
 blankBoard=[[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
 
 defBoard = blankBoard.copy()
-offBoard = blankBoard.copy()
+atkBoard = blankBoard.copy()
 startDefBoard = blankBoard.copy()
 
 def printBoard(boardU1):
@@ -326,7 +333,71 @@ def processInput(board, coords):
             else:
                 print("Hit")
                 return True
+
+def chooseAtk(board):
+    global aliveC
+    global aliveB
+    global aliveR
+    global aliveS
+    global aliveD
+    global lastHit
     
+    if(not(lastHit)):
+        validShot = False
+        while(not(validShot)):
+            x = random.randrange(0,9)
+            y = random.randrange(0,9)
+            if(board[x][y] == " "):
+                validShot = True
+                reply = sendAttack(x,y)
+                if(reply == "H"):
+                    board[x][y] = reply
+                    #lastHit = [x,y]
+                elif(reply == "M"):
+                    board[x][y] = reply
+                else:
+                    board[x][y] = "H"
+                    #lastHit = False
+                    if(reply == "C"):
+                        saliveC = False
+                    elif(reply == "B"):
+                        aliveB = False
+                    elif(reply == "R"):
+                        aliveR = False
+                    elif(reply == "S"):
+                        aliveS = False
+                    elif(reply == "D"):
+                        aliveD = False
+        
+        
+def sendAttack(x,y):
+    fakeX = chr(65 + x)
+    fakeY = y + 1
+    
+    goodResponce = False
+    while(not(goodResponce)):
+        responce = input("Does "+str(fakeX)+str(fakeY)+" hit/miss/sink?")
+        if(responce == "hit"):
+            return "H"
+        elif(responce == "miss"):
+            return "M"
+        elif(responce == "sink"):
+            goodResponce02 = False
+            while(not(goodResponce02)):
+                sunkShip = input("Which ship sunk? [C]arrier/[B]attleship/c[R]uiser/[S]ubmarine/[D]estroyer)")
+                if(sunkShip == "C"):
+                    return "C"
+                elif(sunkShip == "B"):
+                    return "B"
+                elif(sunkShip == "R"):
+                    return "R"
+                elif(sunkShip == "S"):
+                    return "S"
+                elif(sunkShip == "D"):
+                    return "D"
+            
+    
+
 def gameLoop():
     gameOngoing = True
     
@@ -334,9 +405,12 @@ def gameLoop():
         turnFinished = False
         
         while(not(turnFinished)):
-            turnFinished = processInput(defBoard, takeInput())
+            #turnFinished = processInput(defBoard, takeInput())
+            printBoard(atkBoard)
+            chooseAtk(atkBoard)
             
-        printBoard(defBoard)    
+            
+        #printBoard(defBoard)    
             
             
 
