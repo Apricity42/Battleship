@@ -3,7 +3,6 @@ import random
 
 #Global declaration
 player = 0
-turn = 1
 
 safeC = 5
 safeB = 4
@@ -51,11 +50,8 @@ print("")
 
 #Global declaration
 
-blankBoard=[[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
-
-defBoard = blankBoard.copy()
-atkBoard = blankBoard.copy()
-startDefBoard = blankBoard.copy()
+defBoard = [[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
+atkBoard = [[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
 
 def printBoard(boardU1):
     print("")
@@ -359,7 +355,7 @@ def chooseAtk(board):
                     board[x][y] = "H"
                     #lastHit = False
                     if(reply == "C"):
-                        saliveC = False
+                        aliveC = False
                     elif(reply == "B"):
                         aliveB = False
                     elif(reply == "R"):
@@ -396,23 +392,52 @@ def sendAttack(x,y):
                 elif(sunkShip == "D"):
                     return "D"
             
+def winCheck():
+    if((safeC + safeB + safeR + safeS + safeD) == 0): #P1 (attacker) win
+        print("Player 1 wins!")
+        return True
+    elif(not(aliveC) and not(aliveB) and not(aliveR) and not(aliveS) and not(aliveD)): #P2 (defender) win
+        print("Player 2 wins!")
+        return True
+    else:
+        return False
     
-
 def gameLoop():
-    gameOngoing = True
+    gameWon = False
+    #firstTurn = True
+    state = 0
     
-    while(gameOngoing):
-        turnFinished = False
+    if(player = "Player 1"):
+        state = "atk"
+    else:
+        state = "def"
         
-        while(not(turnFinished)):
-            #turnFinished = processInput(defBoard, takeInput())
-            printBoard(atkBoard)
-            chooseAtk(atkBoard)
-            
-            
-        #printBoard(defBoard)    
-            
-            
+    while(not(gameWon)):
+        
+        match state:
+            case "atk":
+                defComplete = True
+                while(not(defComplete)):
+                    defComplete = processInput(defBoard, takeInput())
+                
+                printBoard(defBoard)  
+                state = "atkWinCheck"
+                
+            case "def":
+                chooseAtk(atkBoard)
+                printBoard(atkBoard)
+                state = "defWinCheck"
+                
+            case "atkWinCheck":
+                gameWon = winCheck()
+                state = "def"
+                
+            case "defWinCheck":
+                gameWon = winCheck()
+                state = "atk"
+        
+    dummyInput = input("Press enter to exit")
+    exit()
 
 
 placeShip(defBoard,5,"C") #Carrier = 5
@@ -422,5 +447,3 @@ placeShip(defBoard,3,"S") #Submarine = 3
 placeShip(defBoard,2,"D") #Destroyer = 2
 
 gameLoop()
-
-printBoard(defBoard)
