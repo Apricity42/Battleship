@@ -50,8 +50,8 @@ print("")
 
 #Global declaration
 
-defBoard = [[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
-atkBoard = [[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
+myShips = [[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
+enemyShips = [[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",],[" "," "," "," "," "," "," "," "," "," ",]]
 
 def printBoard(boardU1):
     print("")
@@ -218,7 +218,7 @@ def shipOri(boardU3,posX,posY,length,type):
 #def saveOriginal(initial, copy):
     
 
-def takeInput():
+def receiveCord():
     
     validInput = False
     validX = -1
@@ -255,7 +255,7 @@ def takeInput():
     
     return [validX, validY]
 
-def processInput(board, coords):
+def processCord(board, coords):
     #Ships: C|B|R|S|D
     #Hit: H
     #Miss: M
@@ -330,7 +330,7 @@ def processInput(board, coords):
                 print("Hit")
                 return True
 
-def chooseAtk(board):
+def generateCord(board):
     global aliveC
     global aliveB
     global aliveR
@@ -345,7 +345,7 @@ def chooseAtk(board):
             y = random.randrange(0,9)
             if(board[x][y] == " "):
                 validShot = True
-                reply = sendAttack(x,y)
+                reply = sendCord(x,y)
                 if(reply == "H"):
                     board[x][y] = reply
                     #lastHit = [x,y]
@@ -366,7 +366,7 @@ def chooseAtk(board):
                         aliveD = False
         
         
-def sendAttack(x,y):
+def sendCord(x,y):
     fakeX = chr(65 + x)
     fakeY = y + 1
     
@@ -408,42 +408,42 @@ def gameLoop():
     state = 0
     
     if(player = "Player 1"):
-        state = "atk"
+        state = "my_Defense_Turn"
     else:
-        state = "def"
+        state = "my_Attack_Turn"
         
     while(not(gameWon)):
         
         match state:
-            case "atk":
+            case "my_Defense_Turn":
                 defComplete = True
                 while(not(defComplete)):
-                    defComplete = processInput(defBoard, takeInput())
+                    defComplete = processCord(myShips, receiveCord())
                 
-                printBoard(defBoard)  
-                state = "atkWinCheck"
+                printBoard(myShips)  
+                state = "enemy_Win_Check"
                 
-            case "def":
-                chooseAtk(atkBoard)
-                printBoard(atkBoard)
-                state = "defWinCheck"
+            case "my_Attack_Turn":
+                generateCord(enemyShips)
+                printBoard(enemyShips)
+                state = "my_Win_Check"
                 
-            case "atkWinCheck":
+            case "enemy_Win_Check":
                 gameWon = winCheck()
-                state = "def"
+                state = "my_Attack_Turn"
                 
-            case "defWinCheck":
+            case "my_Win_Check":
                 gameWon = winCheck()
-                state = "atk"
+                state = "my_Defense_Turn"
         
     dummyInput = input("Press enter to exit")
     exit()
 
 
-placeShip(defBoard,5,"C") #Carrier = 5
-placeShip(defBoard,4,"B") #Battleship = 4
-placeShip(defBoard,3,"R") #Cruiser = 3
-placeShip(defBoard,3,"S") #Submarine = 3
-placeShip(defBoard,2,"D") #Destroyer = 2
+placeShip(myShips,5,"C") #Carrier = 5
+placeShip(myShips,4,"B") #Battleship = 4
+placeShip(myShips,3,"R") #Cruiser = 3
+placeShip(myShips,3,"S") #Submarine = 3
+placeShip(myShips,2,"D") #Destroyer = 2
 
 gameLoop()
